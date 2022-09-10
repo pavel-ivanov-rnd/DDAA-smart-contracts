@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Unlicensed
+// SPDX-License-Identifier: None
 pragma solidity ^0.8.0;
 
 import { SolidStateERC20 } from "@solidstate/contracts/token/ERC20/SolidStateERC20.sol";
@@ -28,6 +28,14 @@ contract DDAATestToken is
   //onlyOwner
   {
     _mint(account, amount);
+  }
+
+  function mintAdjustedToDecimals(address account) external {
+    _mint(account, 100000 * (10 ** _decimals()));
+  }
+
+  function multiplyByThatToGetOneToken() external view returns(uint256) {
+    return (10 ** _decimals());
   }
 
   function burnMyBalance()

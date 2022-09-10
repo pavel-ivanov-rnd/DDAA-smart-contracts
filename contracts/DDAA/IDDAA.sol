@@ -28,8 +28,6 @@ interface IDDAA {
 //External getters
   function getOrder(uint256 id) external view returns(Order memory);
 
-  function getVerifierURL(address verifier) external view returns(string memory);
-
   function getOwner() external view returns(address);
 
   event orderSubmitted(uint256 orderId, address verifier);

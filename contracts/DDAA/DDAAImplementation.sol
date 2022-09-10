@@ -10,11 +10,11 @@ contract DDAAImplementation is IDDAA {
   ISolidStateERC20 internal Coin;
   //orderId => Order
   mapping (uint256 => Order) internal orders;
-  //address => url
-  mapping (address => string) internal verifiersURL;
+  //verifier => bool
+  mapping (address => bool) internal aprovedVerifier;
 
-  constructor (address verifier, string memory url, address coinAddress) {
-    verifiersURL[verifier] = url;
+  constructor (address verifier, address coinAddress) {
+    aprovedVerifier[verifier] = true;
     Coin = ISolidStateERC20(coinAddress);
     owner = msg.sender;
   }
@@ -65,11 +65,11 @@ contract DDAAImplementation is IDDAA {
     return orders[id];
   }
 
-  function getVerifierURL(address verifier) external view returns(string memory) {
-    return verifiersURL[verifier];
-  }
-
   function getOwner() external view returns(address) {
     return owner;
+  }
+
+  function getApprovedVerifier(address verifier) external view returns(bool) {
+    return aprovedVerifier[verifier];
   }
 }

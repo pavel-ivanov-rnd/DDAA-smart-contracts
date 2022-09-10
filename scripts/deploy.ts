@@ -19,36 +19,52 @@ async function main() {
   } catch (err : any) { 
     if (err.message.includes("Reason: Already Verified")) {
       console.log("Contract is already verified!");
-    } 
+    } else console.log(err);
   }
 
-  const DDAAImplementation = await ethers.getContractFactory("DDAAImplementation");
-  const DDAA = await DDAAImplementation.deploy(owner.address, "pook", ddaaTestToken.address)
-  await DDAA.deployed();
-  console.log(`DDAA deployed to ${DDAA.address}`);
-  fs.writeFileSync('./scripts/deployment/ddaa_args.ts',
-    `module.exports = ["${owner.address}", "pook", "${ddaaTestToken.address}"]`,
-    { flag: 'w' });
+  const Verifier = await ethers.getContractFactory("Verifier");
+  const verifier = await Verifier.deploy("pook", ddaaTestToken.address);
+  await verifier.deployed();
+  console.log(`Verifier deployed to ${verifier.address}`);
   try {
     if(hre.network.name != "hardhat") {
       await hre.run("verify:verify", {
-        address: DDAA.address,
-        constructorArguments: [owner.address, "pook", ddaaTestToken.address]
+        address: verifier.address,
+        constructorArguments: ["pook", ddaaTestToken.address]
       });
     }
   } catch (err : any) { 
     if (err.message.includes("Reason: Already Verified")) {
       console.log("Contract is already verified!");
-    } 
+    } else console.log(err);
+  }
+
+  const DDAAImplementation = await ethers.getContractFactory("DDAAImplementation");
+  const DDAA = await DDAAImplementation.deploy(verifier.address, ddaaTestToken.address)
+  await DDAA.deployed();
+  console.log(`DDAA deployed to ${DDAA.address}`);
+  try {
+    if(hre.network.name != "hardhat") {
+      await hre.run("verify:verify", {
+        address: DDAA.address,
+        constructorArguments: [verifier.address, ddaaTestToken.address]
+      });
+    }
+  } catch (err : any) { 
+    if (err.message.includes("Reason: Already Verified")) {
+      console.log("Contract is already verified!");
+    } else console.log(err);
   }
 
   fs.writeFileSync('./scripts/deployment/addresses.txt',
   `Test Token: ${ddaaTestToken.address}
+Verifier: ${verifier.address}
 DDAA: ${DDAA.address}`,
   { flag: 'w' });
 
   fs.writeFileSync('./scripts/deployment/addresses.ts',
   `export const testToken = ${ddaaTestToken.address}
+export const verifier: ${verifier.address}
 export const DDAA = : ${DDAA.address}`,
   { flag: 'w' });
 }

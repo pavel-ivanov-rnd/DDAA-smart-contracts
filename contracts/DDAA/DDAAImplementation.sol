@@ -13,8 +13,7 @@ contract DDAAImplementation is IDDAA {
   //verifier => bool
   mapping (address => bool) internal aprovedVerifier;
 
-  constructor (address verifier, address coinAddress) {
-    aprovedVerifier[verifier] = true;
+  constructor (address coinAddress) {
     Coin = ISolidStateERC20(coinAddress);
     owner = msg.sender;
   }

@@ -22,15 +22,15 @@ async function main() {
     } else console.log(err);
   }
 
-  const Verifier = await ethers.getContractFactory("Verifier");
-  const verifier = await Verifier.deploy("pook", ddaaTestToken.address);
-  await verifier.deployed();
-  console.log(`Verifier deployed to ${verifier.address}`);
+  const DDAAImplementation = await ethers.getContractFactory("DDAAImplementation");
+  const DDAA = await DDAAImplementation.deploy(ddaaTestToken.address)
+  await DDAA.deployed();
+  console.log(`DDAA deployed to ${DDAA.address}`);
   try {
     if(hre.network.name != "hardhat") {
       await hre.run("verify:verify", {
-        address: verifier.address,
-        constructorArguments: ["pook", ddaaTestToken.address]
+        address: DDAA.address,
+        constructorArguments: [ddaaTestToken.address]
       });
     }
   } catch (err : any) { 
@@ -39,15 +39,15 @@ async function main() {
     } else console.log(err);
   }
 
-  const DDAAImplementation = await ethers.getContractFactory("DDAAImplementation");
-  const DDAA = await DDAAImplementation.deploy(verifier.address, ddaaTestToken.address)
-  await DDAA.deployed();
-  console.log(`DDAA deployed to ${DDAA.address}`);
+  const Verifier = await ethers.getContractFactory("Verifier");
+  const verifier = await Verifier.deploy("pook", ddaaTestToken.address, DDAA.address);
+  await verifier.deployed();
+  console.log(`Verifier deployed to ${verifier.address}`);
   try {
     if(hre.network.name != "hardhat") {
       await hre.run("verify:verify", {
-        address: DDAA.address,
-        constructorArguments: [verifier.address, ddaaTestToken.address]
+        address: verifier.address,
+        constructorArguments: ["pook", ddaaTestToken.address, ddaaTestToken.address]
       });
     }
   } catch (err : any) { 

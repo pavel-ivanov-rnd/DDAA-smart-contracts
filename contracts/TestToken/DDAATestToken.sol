@@ -30,8 +30,8 @@ contract DDAATestToken is
     _mint(account, amount);
   }
 
-  function mintAdjustedToDecimals(address account) external {
-    _mint(account, 100000 * (10 ** _decimals()));
+  function mintAdjustedToDecimals(address account, uint256 amount) external {
+    _mint(account, amount * (10 ** _decimals()));
   }
 
   function multiplyByThatToGetOneToken() external view returns(uint256) {

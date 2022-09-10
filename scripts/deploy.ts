@@ -8,36 +8,12 @@ async function main() {
     fs.mkdirSync("./scripts/deployment/");
   }
 
-  const TokenImplementation = await ethers.getContractFactory("DDAATestTokenImplementation");
-  const tokenImplementation = await TokenImplementation.deploy();
-  await tokenImplementation.deployed();
+  const DDAATestToken = await ethers.getContractFactory("DDAATestToken");
+  const ddaaTestToken = await DDAATestToken.deploy();
+  await ddaaTestToken.deployed();
   try {
     if(hre.network.name != "hardhat") {
-      await hre.run("verify:verify", { address: tokenImplementation.address });
-    }
-  } catch (err : any) { 
-    if (err.message.includes("Reason: Already Verified")) {
-      console.log("Contract is already verified!");
-    } 
-  }
-
-
-  const TokenProxy = await ethers.getContractFactory("DDAATestTokenProxy");
-  const tokenProxy = await TokenProxy.deploy(tokenImplementation.address, owner.address);
-  await tokenProxy.deployed();
-  fs.writeFileSync('./scripts/deployment/token_proxys_args.ts',
-    `module.exports = ["${tokenImplementation.address}", "${owner.address}"]`,
-    { flag: 'w' });
-  console.log(`Token proxy deployed to ${tokenProxy.address}`);
-  try {
-    if(hre.network.name != "hardhat") {
-      await hre.run("verify:verify", {
-        address: tokenProxy.address,
-        constructorArguments: [
-          tokenImplementation.address,
-          owner.address
-        ]
-      });
+      await hre.run("verify:verify", { address: ddaaTestToken.address });
     }
   } catch (err : any) { 
     if (err.message.includes("Reason: Already Verified")) {
@@ -46,17 +22,17 @@ async function main() {
   }
 
   const DDAAImplementation = await ethers.getContractFactory("DDAAImplementation");
-  const DDAA = await DDAAImplementation.deploy(owner.address, "pook", tokenProxy.address)
+  const DDAA = await DDAAImplementation.deploy(owner.address, "pook", ddaaTestToken.address)
   await DDAA.deployed();
   console.log(`DDAA deployed to ${DDAA.address}`);
   fs.writeFileSync('./scripts/deployment/ddaa_args.ts',
-    `module.exports = ["${owner.address}", "pook", "${tokenProxy.address}"]`,
+    `module.exports = ["${owner.address}", "pook", "${ddaaTestToken.address}"]`,
     { flag: 'w' });
   try {
     if(hre.network.name != "hardhat") {
       await hre.run("verify:verify", {
         address: DDAA.address,
-        constructorArguments: [owner.address, "pook", tokenProxy.address]
+        constructorArguments: [owner.address, "pook", ddaaTestToken.address]
       });
     }
   } catch (err : any) { 
@@ -66,14 +42,12 @@ async function main() {
   }
 
   fs.writeFileSync('./scripts/deployment/addresses.txt',
-  `Token proxy: ${tokenProxy.address}
-Token implementation: ${tokenImplementation.address}
+  `Test Token: ${ddaaTestToken.address}
 DDAA: ${DDAA.address}`,
   { flag: 'w' });
 
   fs.writeFileSync('./scripts/deployment/addresses.ts',
-  `export const tokenProxy = ${tokenProxy.address}
-export const tokenImplementation = ${tokenImplementation.address}
+  `export const testToken = ${ddaaTestToken.address}
 export const DDAA = : ${DDAA.address}`,
   { flag: 'w' });
 }

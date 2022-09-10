@@ -5,16 +5,18 @@ import { ISolidStateERC20 } from "@solidstate/contracts/token/ERC20/ISolidStateE
 import { IDDAA, Order } from "./IDDAA.sol";
 
 contract DDAAImplementation is IDDAA {
-  uint256 public orderIndex;
+  address internal owner;
+  uint256 internal orderIndex;
   ISolidStateERC20 internal Coin;
   //orderId => Order
-  mapping (uint256 => Order) public orders;
+  mapping (uint256 => Order) internal orders;
   //address => url
-  mapping (address => string) public verifiersURL;
+  mapping (address => string) internal verifiersURL;
 
   constructor (address verifier, string memory url, address coinAddress) {
     verifiersURL[verifier] = url;
     Coin = ISolidStateERC20(coinAddress);
+    owner = msg.sender;
   }
 
   function submitOrder(
@@ -54,6 +56,8 @@ contract DDAAImplementation is IDDAA {
       "DDAA: This order has insuffisient amount of funds left");
     orders[order].balance -= amount;
     Coin.transfer(annotator, amount);
+    Coin.transfer(msg.sender, 5 * (amount / 100));
+    Coin.transfer(annotator, 5 * (amount / 100));
     emit paymentToAnnotator(order, annotator, amount);
   }
 //External getters
@@ -63,5 +67,9 @@ contract DDAAImplementation is IDDAA {
 
   function getVerifierURL(address verifier) external view returns(string memory) {
     return verifiersURL[verifier];
+  }
+
+  function getOwner() external view returns(address) {
+    return owner;
   }
 }

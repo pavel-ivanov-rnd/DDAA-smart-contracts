@@ -10,7 +10,28 @@ struct Order {
   string url;
 }
 
-contract IDDAA {
+interface IDDAA {
+  function submitOrder(
+    uint256 amount,
+    uint256 pricePerImage,
+    address verifier,
+    uint256 deadline,
+    string memory endpointUrl
+  ) external;
+
+  function payToAnnotator(
+    address annotator, 
+    uint256 order,
+    uint256 amount
+  ) external;
+
+//External getters
+  function getOrder(uint256 id) external view returns(Order memory);
+
+  function getVerifierURL(address verifier) external view returns(string memory);
+
+  function getOwner() external view returns(address);
+
   event orderSubmitted(uint256 orderId, address verifier);
   event paymentToAnnotator(uint256 orderId, address annotator, uint256 amount);
 }

@@ -11,6 +11,7 @@ async function main() {
   const DDAATestToken = await ethers.getContractFactory("DDAATestToken");
   const ddaaTestToken = await DDAATestToken.deploy();
   await ddaaTestToken.deployed();
+  console.log(`Test Token deployed to ${ddaaTestToken.address}`);
   try {
     if(hre.network.name != "hardhat") {
       await hre.run("verify:verify", { address: ddaaTestToken.address });

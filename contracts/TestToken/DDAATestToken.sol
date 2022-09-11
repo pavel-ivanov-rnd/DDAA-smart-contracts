@@ -18,7 +18,7 @@ contract DDAATestToken is
 
     l.setName("DDAA TEST Token");
     l.setSymbol("DDAA");
-    l.setDecimals(18);
+    l.setDecimals(0);
   //Set owner
     _transferOwnership(msg.sender);
   }

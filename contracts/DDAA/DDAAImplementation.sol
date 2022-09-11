@@ -54,9 +54,9 @@ contract DDAAImplementation is IDDAA {
     require(orders[order].balance >= amount, 
       "DDAA: This order has insuffisient amount of funds left");
     orders[order].balance -= amount;
-    Coin.transfer(annotator, amount);
+    Coin.transfer(annotator, 90 * (amount / 100));
     Coin.transfer(msg.sender, 5 * (amount / 100));
-    Coin.transfer(annotator, 5 * (amount / 100));
+    Coin.transfer(owner, 5 * (amount / 100));
     emit paymentToAnnotator(order, annotator, amount);
   }
 //External getters

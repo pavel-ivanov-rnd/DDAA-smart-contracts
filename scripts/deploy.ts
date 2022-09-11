@@ -47,7 +47,7 @@ async function main() {
     if(hre.network.name != "hardhat") {
       await hre.run("verify:verify", {
         address: verifier.address,
-        constructorArguments: ["pook", ddaaTestToken.address, ddaaTestToken.address]
+        constructorArguments: ["pook", ddaaTestToken.address, DDAA.address]
       });
     }
   } catch (err : any) { 
@@ -64,8 +64,8 @@ DDAA: ${DDAA.address}`,
 
   fs.writeFileSync('./scripts/deployment/addresses.ts',
   `export const testToken = ${ddaaTestToken.address}
-export const verifier: ${verifier.address}
-export const DDAA = : ${DDAA.address}`,
+export const verifier = ${verifier.address}
+export const DDAA = ${DDAA.address}`,
   { flag: 'w' });
 }
 

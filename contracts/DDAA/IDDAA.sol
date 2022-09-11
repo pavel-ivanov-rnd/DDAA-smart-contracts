@@ -30,6 +30,9 @@ interface IDDAA {
 
   function getOwner() external view returns(address);
 
+
+  function getApprovedVerifier(address verifier) external view returns(bool);
+
   event orderSubmitted(uint256 orderId, address verifier);
   event paymentToAnnotator(uint256 orderId, address annotator, uint256 amount);
 }
